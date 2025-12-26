@@ -10,6 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 import threading
 import time
 import httpx
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -26,6 +27,19 @@ app = FastAPI(
     title="VCET Placement Top Students API",
     description="Returns top N students based on academics/LeetCode or placement similarity",
     version="1.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",  # Local dev
+        "https://your-frontend.onrender.com",  # Replace with your actual deployed frontend URL
+        # Add more if needed, e.g. Vercel/Netlify URL
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
 )
 
 @app.get("/top-students")
