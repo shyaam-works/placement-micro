@@ -7,6 +7,9 @@ from pymongo import MongoClient
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.neighbors import NearestNeighbors
+import threading
+import time
+import httpx
 
 load_dotenv()
 
@@ -111,3 +114,32 @@ def get_top_students(
 @app.get("/")
 def home():
     return {"message": "VCET Placement Ranking Microservice is running!"}
+
+  # We can use httpx (already installed with FastAPI) instead of requests
+
+# Optional self-ping to reduce cold starts on Render
+def start_keep_alive():
+    # Get the external URL from environment (set in Render dashboard)
+    external_url = os.getenv("RENDER_EXTERNAL_URL")
+    if not external_url:
+        print("No RENDER_EXTERNAL_URL set — skipping self-ping (cold starts may occur)")
+        return
+
+    ping_url = f"{external_url.rstrip('/')}/top-students?n=1"  # Fast, lightweight call
+
+    def ping_loop():
+        while True:
+            try:
+                httpx.get(ping_url, timeout=10)
+                print(f"Self-ping sent to {ping_url}")
+            except Exception as e:
+                print(f"Self-ping failed: {e}")
+            time.sleep(30)  # Every 5 minutes (300 seconds)
+
+    # Run in background thread
+    thread = threading.Thread(target=ping_loop, daemon=True)
+    thread.start()
+    print("Keep-alive self-ping started (every 5 minutes)")
+
+# Start the keep-alive when the app loads
+start_keep_alive()
