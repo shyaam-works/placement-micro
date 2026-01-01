@@ -34,7 +34,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",  # Local dev
-        "https://your-frontend.onrender.com",  # Replace with your actual deployed frontend URL
+        "https://placement-27vm.onrender.com",  # Replace with your actual deployed frontend URL
         # Add more if needed, e.g. Vercel/Netlify URL
     ],
     allow_credentials=True,
