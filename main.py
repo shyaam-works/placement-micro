@@ -130,3 +130,4 @@ def home():
     return {"message": "VCET Placement Ranking Microservice is running!"}
 
   # We can use httpx (already installed with FastAPI) instead of requests
+#removed self ping
